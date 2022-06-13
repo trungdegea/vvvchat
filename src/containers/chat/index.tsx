@@ -54,14 +54,17 @@ export default function ChatContainer() {
     void (async () => {
       try {
         const res = await getAllMessages();
+        console.log(res);
         setList(res?.data);
       } catch (error) {}
     })();
   }, []);
-  ws?.on("msgToClient", (payload) => {
-    const message = { sender: payload.sender, msg: payload?.text };
+
+  const appendChat = (payload: any) => {
+    const message = { sender: payload?.sender, msg: payload?.text, isToxic: payload?.isToxic };
+    console.log(message)
     setList([...list, message]);
-  });
+  }
 
   const onSendMessage = async () => {
     const id = String(LocalhostStorage.get("id"));
@@ -72,19 +75,23 @@ export default function ChatContainer() {
     }
     try {
       const res = await sendMessage(data);
+      console.log(res);
       ws?.emit("msgToServer", {
-        sender: LocalhostStorage.get("id"),
+        sender: res.data.data?.sender,
         text: msg,
+        isToxic: res.data.data?.isToxic
       });
       setMsg("");
       setRefresh(!refresh);
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Error");
+    }
   };
 
   return (
     <LayoutChat>
       <TableChat>
-        <ListMessage list={list} />
+        <ListMessage list={list} ws={ws} appendChat={appendChat} />
         <ToolChat msg={msg} setMsg={setMsg} onSendMessage={onSendMessage} />
       </TableChat>
     </LayoutChat>

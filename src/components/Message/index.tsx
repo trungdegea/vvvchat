@@ -27,12 +27,12 @@ const TextStyled = styled.span<{ isToxic: boolean }>`
   color: #fff;
   margin: 0 5px;
   ${(p) => p.isToxic && "text-decoration: line-through"};
-  ${(p) => p.isToxic && "color: red"}
+  ${(p) => p.isToxic && "color: #ff6868"};
 `;
 export default function Message(props: any) {
-  const { isMe, id, text, isToxic } = props;
+  const { isMe, id, text, isToxic, name } = props;
   return (
-    <Tooltip title="a">
+    <Tooltip title={name}>
       <WrapperMessage isMe={isMe}>
         {!isMe && (
           <Avatar
